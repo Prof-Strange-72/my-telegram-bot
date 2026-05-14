@@ -1,4 +1,4 @@
 python-telegram-bot==21.10
-yt-dlp==2026.3.31
+yt-dlp==2026.3.17
 google-api-python-client==2.177.0
 google-auth==2.40.3
