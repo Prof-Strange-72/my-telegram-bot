@@ -122,7 +122,8 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
                 if mp4_candidate.exists():
                     downloaded_path = mp4_candidate
 
-        await update.message.reply_video(video=open(downloaded_path, "rb"))
+        with downloaded_path.open("rb") as video_stream:
+            await update.message.reply_video(video=video_stream)
 
         saved_dir = Path(os.getenv("YOUTUBE_ARCHIVE_DIR", "data/youtube_downloads"))
         saved_dir.mkdir(parents=True, exist_ok=True)
@@ -158,12 +159,12 @@ async def handle_video(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
     stream_dir = Path(os.getenv("PUBLIC_VIDEO_DIR", "public/videos"))
     stream_dir.mkdir(parents=True, exist_ok=True)
 
-    video = update.message.video or update.message.document
-    if not video:
+    media = update.message.video or update.message.document
+    if not media:
         await update.message.reply_text("Please send a valid video file.")
         return
 
-    telegram_file = await video.get_file()
+    telegram_file = await media.get_file()
     file_ext = Path(telegram_file.file_path or "video.mp4").suffix or ".mp4"
     file_name = f"{update.effective_user.id}_{telegram_file.file_unique_id}{file_ext}"
     local_path = stream_dir / file_name
